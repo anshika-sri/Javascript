@@ -1,0 +1,46 @@
+      /**
+       * Only count for the BAAS users which are created before the beforeDate
+       * For the BAAS users which have ext_user_id, track the users in users Array.
+       * For the BAAS users which DONOT have ext_user_id, but are internal admins, track users as 'system'
+       * For the BAAS users which DONOT have ext_user_id, but NOT internal admins, track users in usersWithoutExtUserids Array
+       */
+     
+    
+    ********THIS********
+    
+    if(! report[org]) { report[org]['count'] = 0; report[org]['users'] = []; }
+        
+    if(data.created < beforeDate) {
+      report[org]['count']++;
+      totalUserCount++;
+      
+      if(data.ext_user_id) { report[org]['users'].push(data.ext_user_id); }
+      else if(data.username === 'admin') {report[org]['users'].push('system'); }
+      else { report[org]['usersWithoutExtUserids'] ? report[org]['usersWithoutExtUserids'].push(data.uuid) : []; }
+    }
+    else { continue; }
+    
+    if(data.cursor) { return getUsersCountForSingleOrg(hostname, token, org, data.cursor); }
+    
+    
+    *******THAT*************
+    
+     var userCount = data.count;
+    if(! report['org-wise'][org]) {
+      report['org-wise'][org] = { count: 0, users: [] };
+    }
+
+    for (var user of data.entities) {
+      if(user.created > inputJSON.createdBefore) { userCount--; continue; }
+      else if (user.ext_user_id) { report['org-wise'][org].users.push(user.ext_user_id); }
+      else if (user.username === 'admin') { report['org-wise'][org].users.push('system'); }
+      else {
+        if(! report['org-wise'][org].usersWithoutExtUserIds) {
+          report['org-wise'][org].usersWithoutExtUserIds = [];
+        }
+        report['org-wise'][org].usersWithoutExtUserIds.push(user.uuid);
+      }
+    }
+
+    report['org-wise'][org].count += userCount;
+    report.totalUserCount += userCount;
