@@ -1,6 +1,23 @@
+/*
+
 Workable POC:
 
+Create an API to crawl reviews from website Tigerdirect. API should
+take any review page link as input & give Json as output.
 
+Input :
+Any http://www.tigerdirect.com/ review page
+
+Output :
+Response should contain :
+List of Reviews where each review is identified by :
+- Review Comment, Rating, Review Date, Reviewer Name
+
+Implementation Technologies :
+- NodeJs
+- phantomJs (used for crawling data from a website)
+
+*/
 (function(host) {
 
     function Crawler() {
